@@ -6,10 +6,24 @@ import { ShoppingCart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { urlFor } from '@/lib/sanity/lib/image'
+import { useCartStore } from '@/lib/store/cart'
+import { useState } from 'react'
 import type { Product } from '@/lib/sanity/queries'
 
 export default function ProductCard({ product }: { product: Product }) {
+  const addItem = useCartStore(state => state.addItem)
   const imageUrl = product.images?.[0] ? urlFor(product.images[0]).url() : null
+  const [isAnimating, setIsAnimating] = useState(false)
+
+  const handleAddToCart = () => {
+    setIsAnimating(true)
+    addItem(product)
+    
+    // Reset animation after it completes
+    setTimeout(() => {
+      setIsAnimating(false)
+    }, 300) // Match this with the CSS animation duration
+  }
 
   return (
     <Card>
@@ -59,8 +73,16 @@ export default function ProductCard({ product }: { product: Product }) {
               Details
             </Button>
           </Link>
-          <Button className="w-full">
-            <ShoppingCart className="mr-2 h-4 w-4" />
+          <Button 
+            variant="outline"
+            className={`w-full border-2 border-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 ${
+              isAnimating ? 'scale-105 bg-primary text-primary-foreground' : ''
+            }`}
+            onClick={handleAddToCart}
+          >
+            <ShoppingCart className={`mr-2 h-4 w-4 transition-transform duration-300 ${
+              isAnimating ? 'scale-110' : ''
+            }`} />
             Add to Cart
           </Button>
         </div>
