@@ -1,19 +1,5 @@
 import ProductCard from './product-card'
-
-// Shared Product interface
-export interface Product {
-  _id: string
-  name: string
-  slug: string
-  price: number
-  imageUrl: string
-  images: Array<{
-    _type: 'image'
-    asset: {
-      _ref: string
-    }
-  }>
-}
+import type { Product } from '@/lib/sanity/queries'
 
 interface ProductGridProps {
   products: Product[]

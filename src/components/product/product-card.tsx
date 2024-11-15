@@ -6,7 +6,7 @@ import { ShoppingCart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { urlFor } from '@/lib/sanity/lib/image'
-import type { Product } from './product-grid'
+import type { Product } from '@/lib/sanity/queries'
 
 export default function ProductCard({ product }: { product: Product }) {
   const imageUrl = product.images?.[0] ? urlFor(product.images[0]).url() : null
@@ -14,7 +14,10 @@ export default function ProductCard({ product }: { product: Product }) {
   return (
     <Card>
       <CardContent className="p-0">
-        <Link href={`/products/${product.slug}`}>
+        <Link 
+          href={`/products/${product.slug}`}
+          prefetch={true}
+        >
           <div className="aspect-square relative">
             {imageUrl ? (
               <Image
@@ -24,25 +27,34 @@ export default function ProductCard({ product }: { product: Product }) {
                 className="object-cover transition-all hover:scale-105"
               />
             ) : (
-                product.imageUrl && <Image
-              src={product.imageUrl}
-              alt={product.name}
-              fill
-              className="object-cover transition-all hover:scale-105"
-            />
+              product.imageUrl && (
+                <Image
+                  src={product.imageUrl}
+                  alt={product.name}
+                  fill
+                  className="object-cover transition-all hover:scale-105"
+                />
+              )
             )}
           </div>
         </Link>
       </CardContent>
       <CardFooter className="p-4 flex flex-col gap-2">
         <div>
-          <Link href={`/products/${product.slug}`}>
+          <Link 
+            href={`/products/${product.slug}`}
+            prefetch={true}
+          >
             <h3 className="font-semibold hover:underline">{product.name}</h3>
           </Link>
           <p className="text-sm text-muted-foreground">${product.price}</p>
         </div>
         <div className="flex gap-2 w-full">
-          <Link href={`/products/${product.slug}`} className="w-full">
+          <Link 
+            href={`/products/${product.slug}`} 
+            className="w-full"
+            prefetch={true}
+          >
             <Button variant="outline" className="w-full">
               Details
             </Button>

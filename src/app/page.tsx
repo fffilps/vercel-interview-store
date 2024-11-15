@@ -4,36 +4,11 @@ import Image from 'next/image'
 import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card'
+import { getFeaturedProducts, getCategories, getBannerContent } from '@/lib/sanity/queries'
+import { Product } from '@/lib/sanity/queries'
 
-// Simulated API calls with artificial delay
-async function getFeaturedProducts() {
-  await new Promise(resolve => setTimeout(resolve, 1000))
-  return [
-    { id: '1', name: 'Premium Headphones', price: 199.99, image: '/placeholder.svg' },
-    { id: '2', name: 'Wireless Keyboard', price: 79.99, image: '/placeholder.svg' },
-    { id: '3', name: 'Ultra HD Monitor', price: 349.99, image: '/placeholder.svg' },
-    { id: '4', name: 'Ergonomic Mouse', price: 59.99, image: '/placeholder.svg' },
-  ]
-}
-
-async function getCategories() {
-  await new Promise(resolve => setTimeout(resolve, 500))
-  return [
-    { id: '1', name: 'Electronics', image: '/placeholder.svg' },
-    { id: '2', name: 'Clothing', image: '/placeholder.svg' },
-    { id: '3', name: 'Home & Garden', image: '/placeholder.svg' },
-    { id: '4', name: 'Sports & Outdoors', image: '/placeholder.svg' },
-  ]
-}
-
-async function getBannerContent() {
-  await new Promise(resolve => setTimeout(resolve, 300))
-  return {
-    title: 'Summer Sale!',
-    description: 'Get up to 50% off on selected items. Limited time offer!',
-    image: '/placeholder.svg'
-  }
-}
+export const experimental_ppr = true
+export const revalidate = 3600
 
 function ProductSkeleton() {
   return (
@@ -64,13 +39,40 @@ function BannerSkeleton() {
   )
 }
 
+async function Banner() {
+  const banner = await getBannerContent()
+  
+  return (
+    <div className="relative rounded-lg overflow-hidden">
+      <Image
+        src={banner.image}
+        alt={banner.title}
+        width={1200}
+        height={400}
+        className="object-cover w-full aspect-[21/9]"
+        priority
+      />
+      <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center text-white p-6">
+        <h2 className="text-4xl font-bold mb-2">{banner.title}</h2>
+        <p className="text-xl mb-4">{banner.description}</p>
+        <Button size="lg" asChild>
+          <Link href="/products" prefetch={true}>
+            Shop Now
+          </Link>
+        </Button>
+      </div>
+    </div>
+  )
+}
+
 async function FeaturedProducts() {
   const products = await getFeaturedProducts()
+  console.log("product", products)
   
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      {products.map((product) => (
-        <Card key={product.id}>
+      {products.map((product: Product) => (
+        <Card key={product._id}>
           <CardContent className="p-4">
             <Image
               src={product.image}
@@ -84,7 +86,7 @@ async function FeaturedProducts() {
           </CardContent>
           <CardFooter>
             <Button asChild className="w-full">
-              <Link href={`/products/${product.id}`}>View Product</Link>
+              <Link href={`/products/${product.slug}`}>View Product</Link>
             </Button>
           </CardFooter>
         </Card>
@@ -93,22 +95,30 @@ async function FeaturedProducts() {
   )
 }
 
+interface Category {
+  _id: string
+  title: string
+  image: string
+  slug: string
+}
+
 async function Categories() {
   const categories = await getCategories()
+
   
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-      {categories.map((category) => (
-        <Card key={category.id}>
+      {categories.map((category: Category) => (
+        <Card key={category._id}>
           <CardContent className="p-4">
             <Image
               src={category.image}
-              alt={category.name}
+              alt={category.title}
               width={300}
               height={200}
               className="rounded-md object-cover aspect-video mb-2"
             />
-            <CardTitle className="text-center text-lg">{category.name}</CardTitle>
+            <CardTitle className="text-center text-lg">{category.title}</CardTitle>
           </CardContent>
         </Card>
       ))}
@@ -116,30 +126,7 @@ async function Categories() {
   )
 }
 
-async function Banner() {
-  const banner = await getBannerContent()
-  
-  return (
-    <div className="relative rounded-lg overflow-hidden">
-      <Image
-        src={banner.image}
-        alt={banner.title}
-        width={1200}
-        height={400}
-        className="object-cover w-full aspect-[21/9]"
-      />
-      <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center text-white p-6">
-        <h2 className="text-4xl font-bold mb-2">{banner.title}</h2>
-        <p className="text-xl mb-4">{banner.description}</p>
-        <Button size="lg" asChild>
-          <Link href="/products">Shop Now</Link>
-        </Button>
-      </div>
-    </div>
-  )
-}
-
-export default function StorePage() {
+export default async function StorePage() {
   return (
     <div className="space-y-12">
       <section>
@@ -176,7 +163,7 @@ export default function StorePage() {
           Explore our full range of products and find exactly what you&apos;re looking for.
         </p>
         <Button size="lg" asChild>
-          <Link href="/products">
+          <Link href="/products" prefetch={true}>
             View All Products
             <ArrowRight className="ml-2" />
           </Link>
