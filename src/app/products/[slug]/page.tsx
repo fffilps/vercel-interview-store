@@ -2,50 +2,91 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { ShoppingCart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { groq } from 'next-sanity'
+import { client } from '@/lib/sanity/lib/client'
+import { urlFor } from '@/lib/sanity/lib/image'
+import { PortableText } from '@portabletext/react'
 
-// This would typically come from your Shopify integration
-const getProduct = (handle: string) => {
-  const sampleProduct = {
-    id: '1',
-    handle: 'sample-product',
-    title: 'Sample Product',
-    price: '$99.99',
-    imageUrl: '/placeholder.svg',
-    description: 'This is a sample product description. It would typically contain detailed information about the product, its features, and benefits.'
+interface Props {
+  params: {
+    slug: string
   }
-
-  return handle === sampleProduct.handle ? sampleProduct : null
 }
 
-export default function ProductPage({ params }: { params: { handle: string } }) {
-  const product = getProduct(params.handle)
+async function getProduct(slug: string) {
+  return await client.fetch(
+    groq`*[_type == "products" && slug.current == $slug][0]{
+      _id,
+      name,
+      description,
+      price,
+      "imageUrl": image.asset->url,
+      "images": images[]{
+        _type,
+        asset->{
+          _ref,
+          url
+        }
+      },
+      category,
+      "slug": slug.current
+    }`,
+    { slug }
+  )
+}
+
+export default async function ProductPage({ params }: Props) {
+  const product = await getProduct(params.slug)
+  console.log("product", product)
 
   if (!product) {
     notFound()
   }
 
+  const imageUrl = product.images?.[0] ? urlFor(product.images[0]).url() : null
+
   return (
-    <div className="flex flex-col md:flex-row gap-8">
-      <div className="md:w-1/2">
-        <div className="aspect-square relative">
-          <Image
-            src={product.imageUrl}
-            alt={product.title}
-            fill
-            className="object-cover rounded-lg"
-          />
+    <div className="container mx-auto py-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="relative aspect-square">
+          {imageUrl ? (
+            <Image
+              src={imageUrl}
+              alt={product.name}
+              fill
+              className="object-cover"
+            />
+          ) : (
+            product.imageUrl && (
+              <Image
+                src={product.imageUrl}
+                alt={product.name}
+                fill
+                className="object-cover"
+              />
+            )
+          )}
         </div>
-      </div>
-      <div className="md:w-1/2 space-y-4">
-        <h1 className="text-3xl font-bold">{product.title}</h1>
-        <p className="text-2xl font-semibold">{product.price}</p>
-        <div className="prose max-w-none">
-          <p>{product.description}</p>
+        <div className="space-y- md:w-1/2">
+          <h1 className="text-3xl font-bold">{product.name}</h1>
+          <p className="text-2xl font-semibold">${product.price}</p>
+          <div className="prose max-w-none">
+            {product.description && (
+              <PortableText 
+                value={product.description}
+                components={{
+                  block: {
+                    normal: ({children}) => <p className="mb-4">{children}</p>,
+                  },
+                }}
+              />
+            )}
+          </div>
+          <Button size="lg" className="w-full md:w-auto">
+            <ShoppingCart className="mr-2 h-5 w-5" />
+            Add to Cart
+          </Button>
         </div>
-        <Button size="lg" className="w-full md:w-auto">
-          <ShoppingCart className="mr-2 h-5 w-5" />
-          Add to Cart
-        </Button>
       </div>
     </div>
   )

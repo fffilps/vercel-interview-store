@@ -1,11 +1,18 @@
 import ProductCard from './product-card'
 
-interface Product {
-  id: string
-  handle: string
-  title: string
-  price: string
+// Shared Product interface
+export interface Product {
+  _id: string
+  name: string
+  slug: string
+  price: number
   imageUrl: string
+  images: Array<{
+    _type: 'image'
+    asset: {
+      _ref: string
+    }
+  }>
 }
 
 interface ProductGridProps {
@@ -16,7 +23,7 @@ export default function ProductGrid({ products }: ProductGridProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
       {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
+        <ProductCard key={product._id} product={product} />
       ))}
     </div>
   )

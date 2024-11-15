@@ -1,29 +1,29 @@
+import {groq} from 'next-sanity'
+import {client} from '@/lib/sanity/lib/client'
 import ProductGrid from '@/components/product/product-grid'
 
-// This would typically come from your Shopify integration
-const sampleProducts = [
-  {
-    id: '1',
-    handle: 'sample-product-1',
-    title: 'Sample Product 1',
-    price: '$99.99',
-    imageUrl: '/placeholder.svg'
-  },
-  {
-    id: '2',
-    handle: 'sample-product-2',
-    title: 'Sample Product 2',
-    price: '$79.99',
-    imageUrl: '/placeholder.svg'
-  },
-  // Add more sample products as needed
-]
+const query = groq`*[_type == "products"]{
+  _id,
+  name,
+  "slug": slug.current,
+  price,
+  "imageUrl": image.asset->url,
+  "images": images[]{
+    _type,
+    asset->{
+      _ref,
+      url
+    }
+  }
+}`
 
-export default function ProductsPage() {
+export default async function ProductsPage() {
+  const products = await client.fetch(query)
+  
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-6">All Products</h1>
-      <ProductGrid products={sampleProducts} />
+    <div className="container mx-auto py-8">
+      <h1 className="text-3xl font-bold mb-8">Our Products</h1>
+      <ProductGrid products={products} />
     </div>
   )
 }

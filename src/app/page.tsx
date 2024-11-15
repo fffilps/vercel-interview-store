@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowRight, Loader2 } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card'
 
@@ -173,7 +173,7 @@ export default function StorePage() {
       <section className="text-center">
         <h2 className="text-3xl font-bold mb-4">Discover More</h2>
         <p className="text-xl text-muted-foreground mb-6">
-          Explore our full range of products and find exactly what you're looking for.
+          Explore our full range of products and find exactly what you&apos;re looking for.
         </p>
         <Button size="lg" asChild>
           <Link href="/products">

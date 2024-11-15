@@ -9,24 +9,31 @@ export const productType = defineType({
       name: 'name',
       title: 'Name',
       type: 'string',
+      validation: Rule => Rule.required(),
     }),
     defineField({
       name: 'slug',
+      title: 'Slug',
       type: 'slug',
       options: {
         source: 'name',
+        maxLength: 96,
       },
+      validation: Rule => Rule.required(),
     }),
     defineField({
       name: 'price',
       type: 'number',
     }),
     defineField({
-      name: 'image',
-      type: 'image',
-      options: {
-        hotspot: true,
-      },
+      name: 'images',
+      type: 'array',
+      of: [{ 
+        type: 'image', 
+        options: { 
+          hotspot: true 
+        } 
+      }],
     }),
     defineField({
       name: 'description',
