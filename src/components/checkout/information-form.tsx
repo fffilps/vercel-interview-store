@@ -1,66 +1,48 @@
 'use client'
 
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { useCheckoutStore } from "@/lib/store/checkout"
 
-interface InformationFormProps {
-  onNext: () => void
-}
-
-export function InformationForm({ onNext }: InformationFormProps) {
-  const [formData, setFormData] = useState({
-    email: '',
-    firstName: '',
-    lastName: '',
-    phone: ''
-  })
+export function InformationForm() {
+  const { formData, updateFormData, setStep } = useCheckoutStore()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Add validation here
-    onNext()
+    setStep(2) // Move to shipping step
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <h2 className="text-xl font-semibold">Contact Information</h2>
-      
-      <div className="space-y-4">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <Input
+        name="email"
+        placeholder="Email"
+        type="email"
+        required
+        value={formData.email}
+        onChange={(e) => updateFormData({ email: e.target.value })}
+      />
+      <div className="grid grid-cols-2 gap-4">
         <Input
-          type="email"
-          placeholder="Email"
+          name="firstName"
+          placeholder="First name"
           required
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          value={formData.firstName}
+          onChange={(e) => updateFormData({ firstName: e.target.value })}
         />
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Input
-            placeholder="First name"
-            required
-            value={formData.firstName}
-            onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-          />
-          <Input
-            placeholder="Last name"
-            required
-            value={formData.lastName}
-            onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-          />
-        </div>
-        
         <Input
-          type="tel"
-          placeholder="Phone number"
+          name="lastName"
+          placeholder="Last name"
           required
-          value={formData.phone}
-          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+          value={formData.lastName}
+          onChange={(e) => updateFormData({ lastName: e.target.value })}
         />
       </div>
-
-      <Button type="submit" className="w-full">
-        Continue to Shipping
+      <Button 
+        type="submit"
+        className="w-full border border-primary hover:bg-primary/90"
+      >
+        Continue to shipping
       </Button>
     </form>
   )

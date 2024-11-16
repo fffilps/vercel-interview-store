@@ -1,99 +1,69 @@
 'use client'
 
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { useCheckoutStore } from "@/lib/store/checkout"
 
-interface ShippingFormProps {
-  onNext: () => void
-  onBack: () => void
-}
-
-export function ShippingForm({ onNext, onBack }: ShippingFormProps) {
-  const [formData, setFormData] = useState({
-    address: '',
-    apartment: '',
-    city: '',
-    country: '',
-    state: '',
-    zipCode: '',
-    shippingMethod: 'standard'
-  })
+export function ShippingForm() {
+  const { formData, updateFormData, setStep } = useCheckoutStore()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Add validation here
-    onNext()
+    setStep(3) // Move to payment step
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <h2 className="text-xl font-semibold">Shipping Address</h2>
-      
-      <div className="space-y-4">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <Input
+        name="address"
+        placeholder="Address"
+        required
+        value={formData.address}
+        onChange={(e) => updateFormData({ address: e.target.value })}
+      />
+      <Input
+        name="apartment"
+        placeholder="Apartment, suite, etc. (optional)"
+        value={formData.apartment}
+        onChange={(e) => updateFormData({ apartment: e.target.value })}
+      />
+      <div className="grid grid-cols-3 gap-4">
         <Input
-          placeholder="Address"
+          name="city"
+          placeholder="City"
           required
-          value={formData.address}
-          onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+          value={formData.city}
+          onChange={(e) => updateFormData({ city: e.target.value })}
         />
-        
         <Input
-          placeholder="Apartment, suite, etc. (optional)"
-          value={formData.apartment}
-          onChange={(e) => setFormData({ ...formData, apartment: e.target.value })}
+          name="state"
+          placeholder="State"
+          required
+          value={formData.state}
+          onChange={(e) => updateFormData({ state: e.target.value })}
         />
-        
-        <div className="grid grid-cols-2 gap-4">
-          <Input
-            placeholder="City"
-            required
-            value={formData.city}
-            onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-          />
-          <Input
-            placeholder="State"
-            required
-            value={formData.state}
-            onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-          />
-        </div>
-        
         <Input
+          name="zipCode"
           placeholder="ZIP code"
           required
           value={formData.zipCode}
-          onChange={(e) => setFormData({ ...formData, zipCode: e.target.value })}
+          onChange={(e) => updateFormData({ zipCode: e.target.value })}
         />
-
-        <Select
-          value={formData.shippingMethod}
-          onValueChange={(value) => setFormData({ ...formData, shippingMethod: value })}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select shipping method" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="standard">Standard Shipping (5-7 days)</SelectItem>
-            <SelectItem value="express">Express Shipping (2-3 days)</SelectItem>
-            <SelectItem value="overnight">Overnight Shipping</SelectItem>
-          </SelectContent>
-        </Select>
       </div>
-
-      <div className="flex justify-between">
-        <Button type="button" variant="outline" onClick={onBack}>
+      <div className="flex gap-4">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => setStep(1)}
+          className="w-full"
+        >
           Back
         </Button>
-        <Button type="submit">
-          Continue to Payment
+        <Button 
+          type="submit"
+          className="w-full border border-primary hover:bg-primary/90"
+        >
+          Continue to payment
         </Button>
       </div>
     </form>
