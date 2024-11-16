@@ -29,7 +29,7 @@ export default function Header() {
 
         <nav className="flex items-center space-x-4">
           <Link href="/products">Products</Link>
-          {/* <Link href="/blog">Blog</Link> */}
+          <Link href="/blog">Blog</Link>
           <Button
             variant="ghost"
             size="icon"

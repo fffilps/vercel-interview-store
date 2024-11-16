@@ -72,7 +72,7 @@ async function FeaturedProducts() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       {products.map((product: Product) => (
-        <Card key={product._id}>
+        <Card key={product._id} className="bg-gray-100 dark:bg-gray-900">
           <CardContent className="p-4">
             <Image
               src={product.image}
@@ -85,7 +85,7 @@ async function FeaturedProducts() {
             <p className="text-muted-foreground">${product.price.toFixed(2)}</p>
           </CardContent>
           <CardFooter>
-            <Button asChild className="w-full">
+            <Button asChild className="w-full bg-green-500 hover:bg-green-600">
               <Link href={`/products/${product.slug}`}>View Product</Link>
             </Button>
           </CardFooter>
@@ -109,7 +109,7 @@ async function Categories() {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
       {categories.map((category: Category) => (
-        <Card key={category._id}>
+        <Card key={category._id} className="bg-gray-100 dark:bg-gray-900">
           <CardContent className="p-4">
             <Image
               src={category.image}
@@ -128,7 +128,7 @@ async function Categories() {
 
 export default async function StorePage() {
   return (
-    <div className="space-y-12">
+    <div className="space-y-12 py-12">
       <section>
         <Suspense fallback={<BannerSkeleton />}>
           <Banner />

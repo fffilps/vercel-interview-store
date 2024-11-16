@@ -26,7 +26,7 @@ export default function ProductCard({ product }: { product: Product }) {
   }
 
   return (
-    <Card>
+    <Card className=''>
       <CardContent className="p-0">
         <Link 
           href={`/products/${product.slug}`}

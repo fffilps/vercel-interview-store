@@ -1,5 +1,5 @@
 import { cache } from 'react'
-import { groq, PortableTextBlockComponent } from 'next-sanity'
+import { groq } from 'next-sanity'
 import { client } from './lib/client'
 import { notFound } from 'next/navigation'
 
@@ -162,7 +162,7 @@ export interface BlogPost {
   title: string
   slug: string
   excerpt: string
-  content: PortableTextBlockComponent // Define proper type for your content structure
+  content: any // Define proper type for your content structure
   publishedAt: string
 }
 
@@ -208,4 +208,30 @@ export const getAllBlogPosts = cache(async (): Promise<BlogPost[]> => {
     next: { tags: ['blog'], revalidate: 3600 }
   })
 })
+
+export const blogQuery = `*[_type == "blog"] {
+  _id,
+  title,
+  slug,
+  publishedAt,
+  body,
+  "images": images[] {
+    "url": asset->url,
+    "alt": alt,
+    "caption": caption
+  }
+}`
+
+export const singleBlogQuery = `*[_type == "blog" && slug.current == $slug][0] {
+  _id,
+  title,
+  slug,
+  publishedAt,
+  body,
+  "images": images[] {
+    "url": asset->url,
+    "alt": alt,
+    "caption": caption
+  }
+}`
 
