@@ -4,7 +4,7 @@ import { getProducts } from '@/lib/sanity/queries'
 import { SearchForm } from '@/components/product/search-form'
 
 export const experimental_ppr = true
-export const revalidate = 3600 // ISR - revalidate every hour
+export const revalidate = 60 // ISR - revalidate every hour
 
 type SearchParams = Promise<{
   search?: string

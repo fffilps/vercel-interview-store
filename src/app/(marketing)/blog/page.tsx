@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Suspense } from 'react'
 
 export const experimental_ppr = true
-export const revalidate = 3600 // ISR - revalidate every hour
+export const revalidate = 60 // ISR - revalidate every hour
 
 function BlogCardSkeleton() {
   return (
