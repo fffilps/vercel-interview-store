@@ -7,7 +7,9 @@ import { BlogSkeleton } from '@/components/blog/blog-skeleton'
 import { BlogContent } from '@/components/blog/blog-content'
 import { BlogImage } from '@/components/blog/blog-image'
 
-export const experimental_ppr = true // Enable Partial Prerendering
+// Enable both PPR and ISR
+export const experimental_ppr = true
+export const revalidate = 3600 // Revalidate every hour
 
 type Props = {
   params: Promise<{
@@ -15,6 +17,7 @@ type Props = {
   }>
 }
 
+// This will prerender only these paths at build time
 export async function generateStaticParams() {
   const slugs = await getAllBlogSlugs()
   return slugs.map((slug) => ({
@@ -22,12 +25,15 @@ export async function generateStaticParams() {
   }))
 }
 
+// Allow dynamic paths to be generated on-demand
+export const dynamicParams = true
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = await getBlogPostBySlug((await params).slug)
   
   return {
     title: post.title,
-    description: post.excerpt,
+    description: post.description || post.excerpt,
   }
 }
 
@@ -61,10 +67,10 @@ export default async function BlogPostPage({ params }: Props) {
       </Link>
 
       <div className="max-w-4xl mx-auto">
-        {/* Content loads first */}
+        {/* Static content loads first */}
         <Suspense fallback={<BlogSkeleton />}>
           
-          {/* Image loads after content */}
+          {/* Images load after content */}
           <Suspense fallback={<div className="relative aspect-video mb-8 bg-gray-200 rounded-lg" />}>
             <BlogImage post={post} />
           </Suspense>
