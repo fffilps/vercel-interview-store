@@ -162,19 +162,63 @@ export interface BlogPost {
   _id: string
   title: string
   slug: string
+  body: PortableTextBlock[]
   excerpt: string
-  content: PortableTextBlock // Define proper type for your content structure
+  description: string
   publishedAt: string
+  images: {
+    asset: {
+      _ref: string
+      url: string
+    }
+    alt?: string
+    caption?: string
+  }[]
 }
 
-export const getBlogPostBySlug = cache(async (slug: string): Promise<BlogPost> => {
-  const query = groq`*[_type == "post" && slug.current == $slug][0] {
+// Get all blog posts
+export const getBlogPosts = cache(async (): Promise<BlogPost[]> => {
+  const query = groq`*[_type == "blog"] | order(publishedAt desc) {
     _id,
     title,
     "slug": slug.current,
     excerpt,
-    content,
-    publishedAt
+    description,
+    publishedAt,
+    "images": images[]{
+      "asset": asset->{
+        _ref,
+        url
+      },
+      alt,
+      caption
+    }
+  }`
+
+  return client.fetch(query, {}, {
+    cache: 'force-cache',
+    next: { revalidate: 3600, tags: ['blog'] }
+  })
+})
+
+// Get single blog post by slug
+export const getBlogPostBySlug = cache(async (slug: string): Promise<BlogPost> => {
+  const query = groq`*[_type == "blog" && slug.current == $slug][0] {
+    _id,
+    title,
+    "slug": slug.current,
+    excerpt,
+    description,
+    body,
+    publishedAt,
+    "images": images[]{
+      "asset": asset->{
+        _ref,
+        url
+      },
+      alt,
+      caption
+    }
   }`
 
   const post = await client.fetch(query, { slug }, {
@@ -182,57 +226,20 @@ export const getBlogPostBySlug = cache(async (slug: string): Promise<BlogPost> =
     next: { tags: ['blog'], revalidate: 3600 }
   })
 
-  if (!post) notFound()
+  if (!post) {
+    notFound()
+  }
+
   return post
 })
 
+// Get all blog slugs
 export const getAllBlogSlugs = cache(async (): Promise<string[]> => {
-  const query = groq`*[_type == "post"].slug.current`
+  const query = groq`*[_type == "blog"].slug.current`
   
   return client.fetch(query, {}, {
     cache: 'force-cache',
     next: { tags: ['blog'], revalidate: 3600 }
   })
 })
-
-export const getAllBlogPosts = cache(async (): Promise<BlogPost[]> => {
-  const query = groq`*[_type == "post"] | order(publishedAt desc) {
-    _id,
-    title,
-    "slug": slug.current,
-    excerpt,
-    publishedAt
-  }`
-
-  return client.fetch(query, {}, {
-    cache: 'force-cache',
-    next: { tags: ['blog'], revalidate: 3600 }
-  })
-})
-
-export const blogQuery = `*[_type == "blog"] {
-  _id,
-  title,
-  slug,
-  publishedAt,
-  body,
-  "images": images[] {
-    "url": asset->url,
-    "alt": alt,
-    "caption": caption
-  }
-}`
-
-export const singleBlogQuery = `*[_type == "blog" && slug.current == $slug][0] {
-  _id,
-  title,
-  slug,
-  publishedAt,
-  body,
-  "images": images[] {
-    "url": asset->url,
-    "alt": alt,
-    "caption": caption
-  }
-}`
 
