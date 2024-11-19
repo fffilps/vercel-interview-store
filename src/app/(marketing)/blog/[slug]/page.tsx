@@ -1,11 +1,13 @@
+import { Suspense } from 'react'
 import { getBlogPostBySlug, getAllBlogSlugs } from '@/lib/sanity/queries'
-import { PortableText } from '@portabletext/react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { BlogSkeleton } from '@/components/blog/blog-skeleton'
+import { BlogContent } from '@/components/blog/blog-content'
+import { BlogImage } from '@/components/blog/blog-image'
 
-export const revalidate = 3600
+export const experimental_ppr = true // Enable Partial Prerendering
 
 type Props = {
   params: {
@@ -59,29 +61,15 @@ export default async function BlogPostPage({ params }: Props) {
       </Link>
 
       <div className="max-w-4xl mx-auto">
-        {post.images?.[0] && (
-          <div className="relative aspect-video mb-8">
-            <Image
-              src={post.images[0].asset.url}
-              alt={post.images[0].alt || post.title}
-              fill
-              className="object-cover rounded-lg"
-            />
-            {post.images[0].caption && (
-              <p className="text-sm text-gray-500 mt-2">{post.images[0].caption}</p>
-            )}
-          </div>
-        )}
-
-        <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-        
-        <div className="text-gray-600 mb-8">
-          {new Date(post.publishedAt).toLocaleDateString()}
-        </div>
-
-        <div className="prose max-w-none">
-          <PortableText value={post.body} />
-        </div>
+        {/* Content loads first */}
+        <Suspense fallback={<BlogSkeleton />}>
+          
+          {/* Image loads after content */}
+          <Suspense fallback={<div className="relative aspect-video mb-8 bg-gray-200 rounded-lg" />}>
+            <BlogImage post={post} />
+          </Suspense>
+          <BlogContent post={post} />
+        </Suspense>
       </div>
     </article>
   )

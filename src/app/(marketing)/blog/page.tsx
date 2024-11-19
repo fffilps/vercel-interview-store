@@ -3,11 +3,11 @@ import { getBlogPosts } from '@/lib/sanity/queries'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 
+export const experimental_ppr = true // Enable Partial Prerendering
 export const revalidate = 3600
 
 export default async function BlogPage() {
   const posts = await getBlogPosts()
-  console.log(posts);
 
   return (
     <div className="container mx-auto py-8">
