@@ -4,9 +4,8 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Suspense } from 'react'
 
-// Enable streaming and dynamic data
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
+export const experimental_ppr = true
+export const revalidate = 15 // ISR - revalidate every minute
 
 function BlogCardSkeleton() {
   return (
@@ -49,6 +48,9 @@ export default async function BlogPage() {
               )}
               <div className="p-4">
                 <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
+                <div className="text-gray-600 mb-4">
+                  {post.excerpt}
+                </div>
                 <div className="text-gray-600 mb-4">
                   {new Date(post.publishedAt).toLocaleDateString()}
                 </div>
