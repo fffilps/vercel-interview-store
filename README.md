@@ -43,6 +43,7 @@ Make faster:
 - 1 Onclick -> onPressDown it activates the loading of the next page. 
 - 2 I need the products page to not rerender every time and actually cache the products for all or when hitting back button dont reload all data.
 - 3 Need to fix shifting on the products page. 
+Product slug page, use effects the information instead of suspense and fallbacks. would be nice to have text load first and then images no matter what. text is small data.
 
 # Currently: 
 - Sanity Blog pages work systematically
