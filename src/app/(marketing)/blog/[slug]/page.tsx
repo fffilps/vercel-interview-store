@@ -10,9 +10,9 @@ import { BlogImage } from '@/components/blog/blog-image'
 export const experimental_ppr = true // Enable Partial Prerendering
 
 type Props = {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 export async function generateStaticParams() {
@@ -23,7 +23,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const post = await getBlogPostBySlug(params.slug)
+  const post = await getBlogPostBySlug((await params).slug)
   
   return {
     title: post.title,
@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function BlogPostPage({ params }: Props) {
-  const post = await getBlogPostBySlug(params.slug)
+  const post = await getBlogPostBySlug((await params).slug)
 
   if (!post) {
     notFound()
