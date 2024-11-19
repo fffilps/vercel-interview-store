@@ -35,6 +35,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProductPage({ params }: Props) {
   const {slug} = await params
+  const product = await getProductBySlug(slug)
+
+  if (!product) {
+    notFound()
+  }
     
   return (
     <div className="container mx-auto py-8">
