@@ -7,14 +7,14 @@ import { useRouter } from 'next/navigation'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { Minus, Plus, Trash2 } from 'lucide-react'
-import { useCartStore } from '@/lib/store/cart'
+import { useCart } from '@/lib/store/cart'
 import { Separator } from '@/components/ui/separator'
 
 export function CartSheet() {
   // Hydration fix
   const [mounted, setMounted] = useState(false)
   const router = useRouter()
-  const { items, isOpen, totalItems, closeCart, updateQuantity, removeItem } = useCartStore()
+  const { items, isOpen, totalItems, closeCart, updateQuantity, removeItem } = useCart()
 
   useEffect(() => {
     setMounted(true)

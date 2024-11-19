@@ -2,7 +2,6 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { client } from '@/lib/sanity/lib/client'
 import Image from 'next/image'
-import { urlForImage } from '@/lib/sanity/image'
 import { groq } from 'next-sanity'
 
 const query = groq`*[_type == "blog"] | order(publishedAt desc) {
@@ -17,8 +16,16 @@ const query = groq`*[_type == "blog"] | order(publishedAt desc) {
   }
 }`
 
+interface BlogPost {
+  _id: string
+  title: string
+  slug: { current: string }
+  excerpt: string
+  images?: { asset: { url: string } }[]
+}
+
 export default async function HomePage() {
-  const posts = await client.fetch(query)
+  const posts = await client.fetch<BlogPost[]>(query)
   
 
   return (

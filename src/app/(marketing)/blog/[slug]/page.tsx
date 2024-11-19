@@ -1,39 +1,42 @@
-import { Metadata } from 'next'
-import { notFound } from 'next/navigation'
-import { getBlogPostBySlug, getAllBlogSlugs } from '@/lib/sanity/queries'
+// import { Metadata } from 'next'
+// import { notFound } from 'next/navigation'
+// import { getBlogPostBySlug, getAllBlogSlugs } from '@/lib/sanity/queries'
 
-type Props = {
-  params: { slug: string }
-  searchParams: { [key: string]: string | string[] | undefined }
-}
+// export const dynamic = 'force-dynamic'
 
-export async function generateStaticParams() {
-  const slugs = await getAllBlogSlugs()
-  return slugs.map((slug) => ({
-    slug,
-  }))
-}
 
-export async function generateMetadata(
-  { params }: Props
-): Promise<Metadata> {
-  const post = await getBlogPostBySlug(params.slug)
+// export async function generateStaticParams() {
+//   const slugs = await getAllBlogSlugs()
+//   return slugs.map((slug) => ({
+//     slug,
+//   }))
+// }
+
+// export async function generateMetadata(
+//   { params }: {params: Promise<{slug: string}>}
+// ): Promise<Metadata> {
+//   const post = await getBlogPostBySlug((await params).slug)
   
-  return {
-    title: post.title,
-    description: post.excerpt,
-  }
-}
+//   return {
+//     title: post.title,
+//     description: post.excerpt,
+//   }
+// }
 
-export default async function BlogPostPage({ params }: Props) {
-  if (!params.slug) notFound()
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+  // if (!(await params).slug) notFound()
+    const {slug} = await params
+    const title = slug
 
-  const post = await getBlogPostBySlug(params.slug)
+  // const post = await getBlogPostBySlug((await params).slug)
 
   return (
+    <div>
+
     <article className="container mx-auto py-8 prose prose-lg">
-      <h1>{post.title}</h1>
+      <h1>{title}</h1>
       {/* Add your blog post content here */}
     </article>
+    </div>
   )
 } 

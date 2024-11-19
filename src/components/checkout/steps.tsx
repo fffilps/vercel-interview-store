@@ -1,4 +1,4 @@
-import { useCheckoutStore } from '@/lib/store/checkout'
+
 
 interface StepsProps {
   currentStep: number

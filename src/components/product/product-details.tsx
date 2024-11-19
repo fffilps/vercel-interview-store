@@ -3,16 +3,16 @@
 import { useState, useEffect } from 'react'
 import { ShoppingCart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { getProductBySlug } from '@/lib/sanity/queries'
-import { useCartStore } from '@/lib/store/cart'
+import { getProductBySlug, Product } from '@/lib/sanity/queries'
+import { useCart } from '@/lib/store/cart'
 
 interface ProductDetailsProps {
   slug: string
 }
 
 export default function ProductDetails({ slug }: ProductDetailsProps) {
-  const [product, setProduct] = useState<any>(null)
-  const { addItem, toggleCart } = useCartStore()
+  const [product, setProduct] = useState<Product>()
+  const { addItem, toggleCart } = useCart()
   const [isAnimating, setIsAnimating] = useState(false)
 
   useEffect(() => {

@@ -1,5 +1,5 @@
 import { cache } from 'react'
-import { groq } from 'next-sanity'
+import { groq, PortableTextBlock } from 'next-sanity'
 import { client } from './lib/client'
 import { notFound } from 'next/navigation'
 
@@ -9,6 +9,7 @@ export interface Product {
   slug: string
   price: number
   imageUrl: string
+  image: string
   description?: {
     children: Array<{
       text: string
@@ -162,7 +163,7 @@ export interface BlogPost {
   title: string
   slug: string
   excerpt: string
-  content: any // Define proper type for your content structure
+  content: PortableTextBlock // Define proper type for your content structure
   publishedAt: string
 }
 

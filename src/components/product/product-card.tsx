@@ -6,18 +6,18 @@ import { ShoppingCart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { urlFor } from '@/lib/sanity/lib/image'
-import { useCartStore } from '@/lib/store/cart'
+import { useCart } from '@/lib/store/cart'
 import { useState } from 'react'
 import type { Product } from '@/lib/sanity/queries'
 
 export default function ProductCard({ product }: { product: Product }) {
-  const addItem = useCartStore(state => state.addItem)
+  const cartManager = useCart()
   const imageUrl = product.images?.[0] ? urlFor(product.images[0]).url() : null
   const [isAnimating, setIsAnimating] = useState(false)
 
   const handleAddToCart = () => {
     setIsAnimating(true)
-    addItem(product)
+    cartManager.addItem(product)
     
     // Reset animation after it completes
     setTimeout(() => {

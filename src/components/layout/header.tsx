@@ -3,12 +3,12 @@
 import Link from 'next/link'
 import { ShoppingCart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useCartStore } from '@/lib/store/cart'
+import { useCart } from '@/lib/store/cart'
 import { CartSheet } from '@/components/cart/cart-sheet'
 import { useState, useEffect } from 'react'
 
 export default function Header() {
-  const { totalItems, toggleCart } = useCartStore()
+  const { totalItems, toggleCart } = useCart()
   const [isAnimating, setIsAnimating] = useState(false)
 
   // Watch for changes in totalItems and trigger animation

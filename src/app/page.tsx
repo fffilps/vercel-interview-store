@@ -75,7 +75,7 @@ async function FeaturedProducts() {
         <Card key={product._id} className="bg-gray-100 dark:bg-gray-900">
           <CardContent className="p-4">
             <Image
-              src={product.image}
+              src={product.image ? product.image : product.images[0].asset.url}
               alt={product.name}
               width={300}
               height={300}
