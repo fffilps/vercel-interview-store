@@ -71,8 +71,7 @@ export const getProducts = cache(async (params?: SearchParams): Promise<Product[
   }`
 
   return client.fetch(query, {}, { 
-    cache: 'force-cache',
-    next: { revalidate: 3600, tags: ['products'] }
+    next: { tags: ['products'] }
   })
 })
 
@@ -197,7 +196,7 @@ export const getBlogPosts = cache(async (): Promise<BlogPost[]> => {
 
   return client.fetch(query, {}, {
     cache: 'force-cache',
-    next: { revalidate: 3600, tags: ['blog'] }
+    next: { revalidate: 30, tags: ['blog'] }
   })
 })
 
