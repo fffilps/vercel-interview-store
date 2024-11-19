@@ -4,13 +4,13 @@ import { getProductBySlug, getAllProductSlugs } from '@/lib/sanity/queries'
 import { Metadata } from 'next'
 import ProductImage from '@/components/product/product-image'
 import ProductDetails from '@/components/product/product-details'
-import { notFound } from 'next/navigation'
+// import { notFound } from 'next/navigation'
 
 export const experimental_ppr = true
 export const revalidate = 3600
 
 type PageProps = {
-  params: Promise<{ slug: string }> | { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 export async function generateStaticParams() {
@@ -29,8 +29,8 @@ export async function generateMetadata(
   { params }: PageProps
 ): Promise<Metadata> {
   try {
-    const resolvedParams = await Promise.resolve(params)
-    const product = await getProductBySlug(resolvedParams.slug)
+    const {slug} = await params
+    const product = await getProductBySlug(slug)
     
     return {
       title: product.name,
@@ -46,8 +46,7 @@ export async function generateMetadata(
 }
 
 export default async function ProductPage({ params }: PageProps) {
-  try {
-    const resolvedParams = await Promise.resolve(params)
+  const {slug} = await params
     
     return (
       <div className="container mx-auto py-8">
@@ -78,7 +77,7 @@ export default async function ProductPage({ params }: PageProps) {
               <div className="relative aspect-square bg-gray-100 animate-pulse rounded-lg" />
             }
           >
-            <ProductImage slug={resolvedParams.slug} />
+            <ProductImage slug={slug} />
           </Suspense>
           
           <Suspense 
@@ -93,13 +92,9 @@ export default async function ProductPage({ params }: PageProps) {
               </div>
             }
           >
-            <ProductDetails slug={resolvedParams.slug} />
+            <ProductDetails slug={slug} />
           </Suspense>
         </div>
       </div>
     )
-  } catch (error) {
-    console.error('Error loading product:', error)
-    notFound()
-  }
 }

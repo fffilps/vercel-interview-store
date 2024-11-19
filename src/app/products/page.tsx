@@ -9,17 +9,11 @@ export const experimental_ppr = true
 // Static page with revalidation every hour
 export const revalidate = 3600
 
-// Preload the products data
-export const preload = (searchParams: SearchParams) => {
-  // void evaluates the expression and returns undefined
-  void getProducts(searchParams)
-}
-
-interface SearchParams {
+type SearchParams = Promise<{
   search?: string
   category?: string
   sort?: string
-}
+}>
 
 export default async function ProductsPage({
   searchParams,
@@ -27,15 +21,14 @@ export default async function ProductsPage({
   searchParams: SearchParams
 }) {
   // Start loading products data
-  preload(searchParams)
-  const productsData = getProducts(searchParams)
+  const productsData = getProducts(await searchParams)
   
   return (
     <div className="container mx-auto py-8">
       {/* Static content shown immediately */}
       <div className="mb-8 space-y-4">
         <h1 className="text-3xl font-bold">Our Products</h1>
-        <SearchForm initialSearch={searchParams.search} />
+        <SearchForm initialSearch={(await searchParams).search} />
       </div>
 
       {/* Product grid with loading UI */}

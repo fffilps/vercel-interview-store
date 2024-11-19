@@ -1,7 +1,33 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { client } from '@/lib/sanity/lib/client'
+import Image from 'next/image'
+import { groq } from 'next-sanity'
 
-export default function HomePage() {
+const query = groq`*[_type == "blog"] | order(publishedAt desc) {
+  _id,
+  title,
+  slug,
+  excerpt,
+  "images": images[]{
+    asset->{
+      url
+    }
+  }
+}`
+
+interface BlogPost {
+  _id: string
+  title: string
+  slug: { current: string }
+  excerpt: string
+  images?: { asset: { url: string } }[]
+}
+
+export default async function HomePage() {
+  const posts = await client.fetch<BlogPost[]>(query)
+  
+
   return (
     <div className="space-y-12">
       <section className="text-center py-12 bg-muted rounded-lg">
@@ -31,16 +57,26 @@ export default function HomePage() {
       <section>
         <h2 className="text-2xl font-semibold mb-6">Latest Blog Posts</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3].map((post) => (
-            <div key={post} className="border rounded-lg overflow-hidden">
-              <div className="aspect-video bg-muted" />
+          {posts.map((post) => (
+            <div key={post._id} className="border rounded-lg overflow-hidden w-full">
+              <div className="w-full h-auto">
+                {post.images && (
+                  <Image
+                    src={post.images[0].asset.url}
+                    alt={post.title}
+                    width={500}
+                    height={500}
+                    className="object-cover"
+                  />
+                )}
+              </div>
               <div className="p-4">
-                <h3 className="font-semibold mb-2">Blog Post Title {post}</h3>
+                <h3 className="font-semibold mb-2">{post.title}</h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  {post.excerpt}
                 </p>
                 <Button variant="link" asChild>
-                  <Link href={`/blog/post-${post}`}>Read More</Link>
+                  <Link href={`/blog/${post.slug.current}`}>Read More</Link>
                 </Button>
               </div>
             </div>
