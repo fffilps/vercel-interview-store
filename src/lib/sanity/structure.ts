@@ -76,4 +76,10 @@ export const structure: StructureResolver = (S) =>
             .title('Categories')
             .filter('_type == "category"')
         ),
+      S.divider(),
+      S.listItem()
+        .title('Blog Posts')
+        .child(
+          S.documentList().title('Blog Posts').filter('_type == "blog"')
+        ),
     ])

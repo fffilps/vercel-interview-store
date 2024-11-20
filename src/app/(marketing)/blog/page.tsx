@@ -1,52 +1,69 @@
 import Link from 'next/link'
+import { getBlogPosts } from '@/lib/sanity/queries'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
+import { Suspense } from 'react'
 
-export default function HomePage() {
+export const experimental_ppr = true
+export const revalidate = 15 // ISR - revalidate every minute
+
+function BlogCardSkeleton() {
   return (
-    <div className="space-y-12">
-      <section className="text-center py-12 bg-muted rounded-lg">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Store</h1>
-        <p className="text-xl mb-6">Discover amazing products at great prices</p>
-        <Button asChild>
-          <Link href="/products">Shop Now</Link>
-        </Button>
-      </section>
+    <div className="border rounded-lg overflow-hidden animate-pulse">
+      <div className="relative aspect-video bg-gray-200" />
+      <div className="p-4">
+        <div className="h-6 bg-gray-200 rounded w-3/4 mb-2" />
+        <div className="h-4 bg-gray-200 rounded w-full mb-4" />
+        <div className="h-4 bg-gray-200 rounded w-1/4 mb-4" />
+        <div className="h-10 bg-gray-200 rounded w-1/3" />
+      </div>
+    </div>
+  )
+}
 
-      <section>
-        <h2 className="text-2xl font-semibold mb-6">Featured Categories</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {['Electronics', 'Clothing', 'Home & Garden'].map((category) => (
-            <div key={category} className="bg-muted p-6 rounded-lg text-center">
-              <h3 className="text-xl font-semibold mb-2">{category}</h3>
-              <Button variant="outline" asChild>
-                <Link href={`/products?category=${category.toLowerCase()}`}>
-                  Explore
-                </Link>
-              </Button>
-            </div>
+export default async function BlogPage() {
+  const posts = await getBlogPosts()
+
+  return (
+    <div className="container mx-auto py-8">
+      <h1 className="text-3xl font-bold mb-8">Blog Posts</h1>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Suspense 
+          fallback={[...Array(6)].map((_, i) => (
+            <BlogCardSkeleton key={i} />
           ))}
-        </div>
-      </section>
-
-      <section>
-        <h2 className="text-2xl font-semibold mb-6">Latest Blog Posts</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3].map((post) => (
-            <div key={post} className="border rounded-lg overflow-hidden">
-              <div className="aspect-video bg-muted" />
+        >
+          {posts.map((post) => (
+            <div key={post._id} className="border rounded-lg overflow-hidden">
+              {post.images?.[0] && (
+                <div className="relative aspect-video">
+                  <Image
+                    src={post.images[0].asset.url}
+                    alt={post.images[0].alt || post.title}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              )}
               <div className="p-4">
-                <h3 className="font-semibold mb-2">Blog Post Title {post}</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                </p>
-                <Button variant="link" asChild>
-                  <Link href={`/blog/post-${post}`}>Read More</Link>
-                </Button>
+                <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
+                <div className="text-gray-600 mb-4">
+                  {post.excerpt}
+                </div>
+                <div className="text-gray-600 mb-4">
+                  {new Date(post.publishedAt).toLocaleDateString()}
+                </div>
+                <div className="flex justify-start border-t pt-4">
+                  <Button className='border border-black hover:bg-black hover:text-white cursor-pointer' asChild>
+                    <Link href={`/blog/${post.slug}`}>Read More</Link>
+                  </Button>
+                </div>
               </div>
             </div>
           ))}
-        </div>
-      </section>
+        </Suspense>
+      </div>
     </div>
   )
 }

@@ -2,7 +2,9 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+First you must install dependencies. Any time you install more you must add --legacy-peer-deps. 
+
+Secondly, run the development server:
 
 ```bash
 npm run dev
@@ -34,3 +36,15 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+
+### Todo: 
+Make faster: 
+- 1 Onclick -> onPressDown it activates the loading of the next page. 
+- 2 I need the products page to not rerender every time and actually cache the products for all or when hitting back button dont reload all data.
+- 3 Need to fix shifting on the products page. 
+Product slug page, use effects the information instead of suspense and fallbacks. would be nice to have text load first and then images no matter what. text is small data.
+
+# Currently: 
+- Sanity Blog pages work systematically
+- Need to get Shopify working, Can use the one from the other commerce store and then vice versa getting sanity over there.
